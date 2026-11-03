@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kalkulačka povinného podílu OZP | TSP DATA</title>
+<meta name="description" content="Kolik osob se zdravotním postižením musíte zaměstnat, kolik stojí odvod, zaměstnání nebo náhradní plnění. Orientační kalkulačka podle zákona o zaměstnanosti.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --tsp-red:#E52A18; --tsp-dark:#20313A; --tsp-blue:#00415C; --tsp-teal:#00B0AB;
+  --tsp-light:#D1DFDF; --tsp-offwhite:#ECEBEC; --tsp-white:#fff;
+  --font-primary:'Inter','Apercu Pro',Arial,sans-serif;
+  --radius-card:8px;
+  --logo-r:#e52a18; --logo-d:#20313a;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;font-family:var(--font-primary);color:var(--tsp-dark);background:var(--tsp-offwhite);line-height:1.5;font-size:16px}
+.wrap{max-width:980px;margin:0 auto;padding:0 1rem}
+.tsp-header{background:#fff;border-bottom:3px solid var(--tsp-red)}
+.tsp-header .wrap{display:flex;align-items:center;justify-content:space-between;padding-top:.75rem;padding-bottom:.75rem}
+.logo{height:42px;width:auto;display:block}
+.pdf-btn{display:inline-flex;align-items:center;gap:.4rem;background:var(--tsp-red);color:#fff;border:none;border-radius:5px;padding:.5rem .9rem;font-family:var(--font-primary);font-size:.8rem;font-weight:600;cursor:pointer;transition:background .2s}
+.pdf-btn:hover{background:#c42212}
+.hero{background:var(--tsp-dark);color:#fff;padding:2.5rem 0 2.25rem;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-15%;left:-2%;width:8%;height:130%;background:var(--tsp-red);border-radius:0 30% 30% 0/0 8% 8% 0;transform:skewX(-4deg)}
+.hero .wrap{position:relative;z-index:1}
+.slogan{color:var(--tsp-teal);font-family:'Courier New',monospace;font-size:.8rem;letter-spacing:.08em;text-transform:uppercase;margin:0 0 .5rem}
+.hero h1{font-size:clamp(1.6rem,5vw,2.6rem);font-weight:500;line-height:1.15;margin:0 0 .75rem}
+.hero p{margin:0;max-width:640px;color:var(--tsp-light)}
+main{padding:1.5rem 0 2rem}
+.card{background:#fff;border-radius:var(--radius-card);padding:1.25rem;box-shadow:0 2px 12px rgba(32,49,58,.08);border-top:3px solid var(--tsp-red);margin-bottom:1.25rem;break-inside:avoid}
+.card h2{font-size:1.2rem;font-weight:600;margin:0 0 .25rem}
+.label{font-family:'Courier New',monospace;font-size:.72rem;color:#00807c;text-transform:uppercase;letter-spacing:.08em;margin:0 0 .75rem}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem}
+.field label{display:block;font-size:.85rem;font-weight:600;margin-bottom:.25rem}
+.field input[type=text],.field select{width:100%;font:inherit;font-size:1rem;padding:.6rem .7rem;border:1px solid #b9c6c6;border-radius:5px;background:#fff;color:var(--tsp-dark)}
+.field input:focus,.field select:focus{outline:2px solid var(--tsp-teal);outline-offset:1px;border-color:var(--tsp-teal)}
+.hint{font-size:.78rem;color:#4b5d66;margin:.25rem 0 0}
+.check{display:flex;gap:.5rem;align-items:flex-start;font-size:.9rem;margin-top:.75rem}
+.check input{margin-top:.25rem;accent-color:var(--tsp-red)}
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:.75rem}
+.fact{background:var(--tsp-offwhite);border-radius:6px;padding:.75rem}
+.fact .v{font-size:1.5rem;font-weight:700;line-height:1.1}
+.fact .k{font-size:.78rem;color:#4b5d66;margin-top:.2rem}
+.fact.hl{background:var(--tsp-dark);color:#fff}.fact.hl .k{color:var(--tsp-light)}
+.opt{border:1px solid var(--tsp-light);border-radius:6px;padding:1rem;display:flex;flex-direction:column;gap:.35rem}
+.opt h3{margin:0;font-size:1rem;font-weight:600}
+.opt .big{font-size:1.5rem;font-weight:700;color:var(--tsp-blue)}
+.opt .sm{font-size:.82rem;color:#4b5d66;margin:0}
+.opt.best{border:2px solid var(--tsp-teal)}
+.tag{font-family:'Courier New',monospace;font-size:.68rem;text-transform:uppercase;letter-spacing:.06em;color:#00807c;min-height:1em}
+.rows{margin-top:1rem;border-top:1px solid var(--tsp-light)}
+.row{display:flex;justify-content:space-between;gap:1rem;padding:.55rem 0;border-bottom:1px solid var(--tsp-light);font-size:.95rem}
+.row b{white-space:nowrap}
+.row.total{font-weight:700;font-size:1.05rem;border-bottom:none}
+.msg{background:#fff7e0;border-left:4px solid #e0a800;padding:.6rem .8rem;border-radius:4px;font-size:.9rem;margin-top:.75rem}
+.msg.ok{background:#e4f6f5;border-color:var(--tsp-teal)}
+ul.plain{margin:.5rem 0 0;padding-left:1.1rem;font-size:.92rem}
+ul.plain li{margin:.25rem 0}
+.tsp-footer{background:var(--tsp-dark);color:var(--tsp-light);padding:2rem 0 1.25rem;font-size:.85rem}
+.tsp-footer .logo{height:36px;margin-bottom:1rem}
+.tsp-footer a{color:var(--tsp-teal);text-decoration:none;word-break:break-word}
+.tsp-footer a:hover{text-decoration:underline}
+.tsp-footer p{margin:.4rem 0}
+.tsp-footer .copy{border-top:1px solid rgba(255,255,255,.12);margin-top:1.25rem;padding-top:.9rem;font-size:.75rem;color:rgba(255,255,255,.55)}
+.hidden{display:none!important}
+@media (max-width:760px){
+  .grid,.grid3{grid-template-columns:1fr}
+  .facts{grid-template-columns:1fr 1fr}
+  .hero::before{width:14%}
+}
+@media print{
+  .no-print{display:none!important}
+  body{background:#fff}
+  .card,.opt,.fact{break-inside:avoid}
+  .hero,.tsp-footer,.fact.hl{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="logo" viewBox="0 0 298.08 102.05">
+      <polygon fill="var(--logo-r)" points="34.02 34.39 34.02 38.39 44.37 38.39 44.37 67.65 48.55 67.65 48.55 38.39 58.91 38.39 58.91 34.39 34.02 34.39"/>
+      <path fill="var(--logo-r)" d="m80.86,42.99c-1.42-3.28-3.61-4.99-6.75-4.99-3.66,0-5.99,1.85-5.99,5.13,0,3.56,3.28,4.51,7.69,5.65,5.08,1.33,9.45,2.85,9.45,8.65,0,7.27-4.56,10.59-11.02,10.59s-11.12-3.37-12.4-9.88l3.9-1.52c1.19,4.46,3.75,7.41,8.5,7.41,4.04,0,6.84-1.99,6.84-6.03,0-3.47-2.57-4.18-7.55-5.42-4.7-1.19-9.6-2.66-9.6-9.31,0-5.27,3.66-9.26,10.17-9.26,5.79,0,9.08,3.51,10.41,7.13l-3.66,1.85Z"/>
+      <path fill="var(--logo-r)" d="m111.37,43.9c0-3.66-2-5.51-5.65-5.51h-8.31v11.02h8.31c3.66,0,5.65-1.85,5.65-5.51m-13.97,9.5v14.25h-4.18v-33.26h12.59c6.41,0,9.88,3.71,9.88,9.5s-3.47,9.5-9.88,9.5h-8.41Z"/>
+      <path fill="var(--logo-d)" d="m161.45,38.34v25.27h3.8c6.6,0,10.74-3.33,10.74-12.64s-4.14-12.64-10.74-12.64h-3.8Zm4.23-3.99c8.65,0,14.77,5.37,14.77,16.63s-6.13,16.63-14.77,16.63h-8.41v-33.26h8.41Z"/>
+      <path fill="var(--logo-d)" d="m197.04,39.76l5.13,14.97h-10.26l5.13-14.97Zm-2-5.42l-11.83,33.26h4.33l2.99-8.88h13.02l2.99,8.88h4.33l-11.83-33.26h-3.99Z"/>
+      <polygon fill="var(--logo-d)" points="211.19 34.35 211.19 38.34 221.55 38.34 221.55 67.61 225.73 67.61 225.73 38.34 236.09 38.34 236.09 34.35 211.19 34.35"/>
+      <path fill="var(--logo-d)" d="m250.24,39.76l5.13,14.97h-10.26l5.13-14.97Zm-2-5.42l-11.83,33.26h4.33l2.99-8.88h13.02l2.99,8.88h4.33l-11.83-33.26h-3.99Z"/>
+      <path fill="var(--logo-r)" d="m139.85,50.45l-10.79-2.61c-.83-.21-1.4-.96-1.4-1.81v-9.8c0-1.03.84-1.87,1.87-1.87h10.79c1.03,0,1.87.84,1.87,1.87v12.41c0,1.22-1.15,2.11-2.33,1.81"/>
+      <polygon fill="var(--logo-d)" points="127.66 67.58 142.25 67.58 142.25 55.09 127.66 51.51 127.66 67.58"/>
+    </symbol>
+  </defs>
+</svg>
+
+<header class="tsp-header">
+  <div class="wrap">
+    <svg class="logo" viewBox="0 0 298.08 102.05" role="img" aria-label="TSP DATA" style="width:123px"><use href="#logo"/></svg>
+    <button class="pdf-btn no-print" onclick="window.print()" aria-label="Uložit jako PDF">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+      PDF
+    </button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="wrap">
+    <p class="slogan">Zaměstnávání OZP</p>
+    <h1>Kalkulačka povinného podílu osob se zdravotním postižením</h1>
+    <p>Zadejte počet zaměstnanců. Spočítáme, kolik osob se zdravotním postižením (OZP) máte zaměstnat a kolik by vás stál odvod, nové zaměstnance nebo náhradní plnění. Výsledek je orientační.</p>
+  </div>
+</section>
+
+<main>
+<div class="wrap">
+
+  <div class="card">
+    <h2>Vstupy</h2>
+    <p class="label">Firma a mzda</p>
+    <div class="grid">
+      <div class="field">
+        <label for="n">Průměrný roční přepočtený počet zaměstnanců</label>
+        <input id="n" type="text" inputmode="decimal" value="100">
+        <p class="hint">Počítá se z odpracovaných hodin podle § 15 vyhlášky č. 518/2004 Sb., ne z hlav. Povinnost vzniká nad 25 zaměstnanců.</p>
+      </div>
+      <div class="field">
+        <label for="year">Rok plnění</label>
+        <select id="year">
+          <option value="2025">2025 (mzda vyhlášena)</option>
+          <option value="2026" selected>2026 (mzda zatím nevyhlášena)</option>
+        </select>
+        <p class="hint" id="yearHint"></p>
+      </div>
+      <div class="field">
+        <label for="b">OZP, které už zaměstnáváte (přepočtený počet)</label>
+        <input id="b" type="text" inputmode="decimal" value="0">
+        <p class="hint">Invalidita 1. a 2. stupně a zdravotně znevýhodnění.</p>
+      </div>
+      <div class="field">
+        <label for="c">z toho s těžším postižením (invalidita 3. stupně)</label>
+        <input id="c" type="text" inputmode="decimal" value="0">
+        <p class="hint">Počítají se třikrát. Zadejte je jen sem, ne do pole vlevo.</p>
+      </div>
+      <div class="field">
+        <label for="w">Průměrná mzda pro výpočet (Kč měsíčně)</label>
+        <input id="w" type="text" inputmode="numeric" value="48 171">
+        <p class="hint">Průměrná mzda v národním hospodářství za 1. až 3. čtvrtletí. Můžete ji přepsat.</p>
+      </div>
+      <div class="field">
+        <label for="g">Předpoklad: hrubá mzda nového zaměstnance OZP (Kč měsíčně)</label>
+        <input id="g" type="text" inputmode="numeric" value="40 000">
+        <p class="hint">Je to váš odhad, zákon mzdu nestanoví.</p>
+      </div>
+      <div class="field">
+        <label for="r">Odvody zaměstnavatele z mzdy (%)</label>
+        <input id="r" type="text" inputmode="decimal" value="33,8">
+        <p class="hint">Sociální 24,8 % a zdravotní 9 %.</p>
+      </div>
+    </div>
+    <label class="check"><input type="checkbox" id="hv"> <span>Nově přijatí zaměstnanci budou mít těžší postižení (jeden se započítá třikrát, na stejné krytí stačí třetina úvazků)</span></label>
+  </div>
+
+  <div class="card" id="res1">
+    <h2>Kolik OZP máte zaměstnat</h2>
+    <p class="label">Povinný podíl 4 %</p>
+    <div class="facts">
+      <div class="fact hl"><div class="v" id="fReq">0</div><div class="k">povinný počet OZP</div></div>
+      <div class="fact"><div class="v" id="fEmp">0</div><div class="k">už zaměstnáváte (těžší postižení 3×)</div></div>
+      <div class="fact"><div class="v" id="fShare">0 %</div><div class="k">váš podíl OZP</div></div>
+      <div class="fact hl"><div class="v" id="fMiss">0</div><div class="k">chybí OZP</div></div>
+    </div>
+    <div id="msg1"></div>
+  </div>
+
+  <div class="card" id="res2">
+    <h2>Tři způsoby, jak chybějící OZP pokrýt</h2>
+    <p class="label">Roční náklad při jednom způsobu</p>
+    <div class="grid3">
+      <div class="opt" id="oOdvod">
+        <span class="tag" id="tOdvod"></span>
+        <h3>Odvod do státního rozpočtu</h3>
+        <div class="big" id="vOdvod">0 Kč</div>
+        <p class="sm" id="sOdvod"></p>
+      </div>
+      <div class="opt" id="oZam">
+        <span class="tag" id="tZam"></span>
+        <h3>Zaměstnat OZP</h3>
+        <div class="big" id="vZam">0 Kč</div>
+        <p class="sm" id="sZam"></p>
+      </div>
+      <div class="opt" id="oNp">
+        <span class="tag" id="tNp"></span>
+        <h3>Náhradní plnění</h3>
+        <div class="big" id="vNp">0 Kč</div>
+        <p class="sm" id="sNp"></p>
+      </div>
+    </div>
+    <ul class="plain">
+      <li>Odvod je čistý náklad. Za náhradní plnění dostanete zboží nebo službu, za zaměstnance práci.</li>
+      <li>Náhradní plnění můžete odebírat jen od zaměstnavatelů s dohodou o uznání (chráněný trh práce), od OZP jako OSVČ bez zaměstnanců a od integračních sociálních podniků. Cena je bez DPH.</li>
+      <li>Mzdový náklad nezahrnuje příspěvky Úřadu práce na zaměstnávání OZP, pokud na ně máte nárok.</li>
+    </ul>
+  </div>
+
+  <div class="card" id="res3">
+    <h2>Kombinace</h2>
+    <p class="label">Část zaměstnat, část odebrat, zbytek odvést</p>
+    <div class="grid">
+      <div class="field">
+        <label for="h">Kolik nových OZP zaměstnat (přepočtený počet úvazků)</label>
+        <input id="h" type="text" inputmode="decimal" value="0">
+      </div>
+      <div class="field">
+        <label for="np">Nákup od zaměstnavatelů OZP za rok (Kč bez DPH)</label>
+        <input id="np" type="text" inputmode="numeric" value="0">
+      </div>
+    </div>
+    <div class="rows">
+      <div class="row"><span>Zaměstnáním pokryto OZP</span><b id="kHire">0</b></div>
+      <div class="row"><span>Náhradním plněním pokryto OZP</span><b id="kNp">0</b></div>
+      <div class="row"><span>Zbývá odvést za OZP</span><b id="kRest">0</b></div>
+      <div class="row"><span>Mzdový náklad nových zaměstnanců</span><b id="kCostH">0 Kč</b></div>
+      <div class="row"><span>Náhradní plnění</span><b id="kCostN">0 Kč</b></div>
+      <div class="row"><span>Odvod do státního rozpočtu</span><b id="kCostO">0 Kč</b></div>
+      <div class="row total"><span>Celkem za rok</span><b id="kTotal">0 Kč</b></div>
+    </div>
+    <div id="msg3"></div>
+  </div>
+
+  <div class="card">
+    <h2>Termíny</h2>
+    <ul class="plain">
+      <li>Plnění povinného podílu za uplynulý rok ohlašujete Úřadu práce do 15. února (§ 83). Za rok 2026 formulářem, od roku 2027 přes jednotné měsíční hlášení zaměstnavatele (JMHZ).</li>
+      <li>Odvod musí být na účtu Úřadu práce do 15. února následujícího roku (§ 82 odst. 2).</li>
+      <li>Náhradní plnění musí být zaplacené nejpozději do 15. února, dodavatel ho zapíše do evidence ministerstva do 30 dnů od zaplacení (§ 81 odst. 3).</li>
+    </ul>
+  </div>
+
+</div>
+</main>
+
+<footer class="tsp-footer">
+  <div class="wrap">
+    <svg class="logo" viewBox="0 0 298.08 102.05" role="img" aria-label="TSP DATA" style="width:105px;--logo-r:#fff;--logo-d:#fff"><use href="#logo"/></svg>
+    <p>Pravidla platná k 3. 11. 2026, ověřeno v textu zákona a ve sdělení MPSV. Kalkulačka je orientační pomůcka, ne právní poradenství. Rozhodující je znění předpisů a stanovisko Úřadu práce.</p>
+    <p>Zdroje:</p>
+    <p><a href="https://www.zakonyprolidi.cz/cs/2004-435" target="_blank" rel="noopener">Zákon č. 435/2004 Sb., o zaměstnanosti, § 81 až 84</a></p>
+    <p><a href="https://www.zakonyprolidi.cz/cs/2004-518" target="_blank" rel="noopener">Vyhláška č. 518/2004 Sb., § 15 až 18</a></p>
+    <p><a href="https://www.zakonyprolidi.cz/cs/2025-537" target="_blank" rel="noopener">Sdělení MPSV č. 537/2025 Sb.: průměrná mzda za 1. až 3. čtvrtletí 2025 činí 48 171 Kč</a></p>
+    <p><a href="https://mpsv.gov.cz/plneni-povinneho-podilu-ozp" target="_blank" rel="noopener">MPSV: Plnění povinného podílu zaměstnávání OZP s vysvětlujícími příklady</a></p>
+    <p class="copy">&copy; TSP DATA, a.s.</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var WAGE={2025:48171};
+  var $=function(id){return document.getElementById(id)};
+  function num(id){
+    var s=String($(id).value).replace(/\s| /g,'').replace(',','.');
+    var v=parseFloat(s);
+    return isFinite(v)&&v>0?v:0;
+  }
+  var t2=function(x){return Math.floor(x*100+1e-6)/100};
+  var fmtN=function(x){return new Intl.NumberFormat('cs-CZ',{minimumFractionDigits:2,maximumFractionDigits:2}).format(x)};
+  var kc=function(x){return new Intl.NumberFormat('cs-CZ',{maximumFractionDigits:0}).format(Math.round(x))+' Kč'};
+  var coefOf=function(emp,n){var s=emp/n+1e-9;return s>=0.03?1:(s>=0.01?2:3.5)};
+  var fmtC=function(c){return String(c).replace('.',',')};
+
+  function calc(){
+    var year=$('year').value;
+    if(year==='2025'&&!$('w').dataset.touched){$('w').value=new Intl.NumberFormat('cs-CZ').format(WAGE[2025])}
+    $('yearHint').textContent= year==='2025'
+      ? 'Mzda 48 171 Kč vyhlášena sdělením MPSV č. 537/2025 Sb.'
+      : 'Mzda za 1. až 3. čtvrtletí 2026 zatím vyhlášena není. Předvyplněna je hodnota za 2025, přepište ji odhadem.';
+
+    var n=num('n'), b=num('b'), c=num('c'), w=num('w')||WAGE[2025], g=num('g'), r=num('r')/100;
+    var f=$('hv').checked?3:1;
+    var emp=t2(b+3*c);
+    var req=n>25?t2(n*0.04):0;
+    var miss=Math.max(0,t2(req-emp));
+    var share=n>0?emp/n:0;
+
+    $('fReq').textContent=fmtN(req);
+    $('fEmp').textContent=fmtN(emp);
+    $('fShare').textContent=new Intl.NumberFormat('cs-CZ',{maximumFractionDigits:2}).format(share*100)+' %';
+    $('fMiss').textContent=fmtN(miss);
+
+    var m1=$('msg1');
+    if(n<=25){
+      m1.innerHTML='<div class="msg">Povinnost platí pro zaměstnavatele s více než 25 zaměstnanci (v přepočteném počtu). Vy pod hranicí jste, nic nemusíte plnit.</div>';
+    } else if(miss<=0){
+      m1.innerHTML='<div class="msg ok">Povinný podíl plníte zaměstnáváním. Nic dalšího nemusíte řešit.</div>';
+    } else {
+      m1.innerHTML='';
+    }
+
+    var active=n>25&&miss>0;
+    $('res2').classList.toggle('hidden',!active);
+    $('res3').classList.toggle('hidden',!active);
+    if(!active) return;
+
+    var c0=coefOf(emp,n);
+    var odvod=Math.ceil(miss*c0*w-1e-6);
+    var fte=miss/f;
+    var zam=fte*12*g*(1+r);
+    var npAmt=Math.ceil(miss*7*w-1e-6);
+
+    $('vOdvod').textContent=kc(odvod);
+    $('sOdvod').textContent=fmtN(miss)+' OZP × koeficient '+fmtC(c0)+' × '+kc(w).replace(' Kč',' Kč')+'. Koeficient závisí na tom, kolik OZP zaměstnáváte přímo: do 1 % je 3,5, od 1 % je 2, od 3 % je 1.';
+    $('vZam').textContent=kc(zam);
+    $('sZam').textContent=fmtN(fte)+' přepočtených úvazků × 12 měsíců × '+kc(g).replace(' Kč',' Kč')+' včetně odvodů zaměstnavatele.';
+    $('vNp').textContent=kc(npAmt);
+    $('sNp').textContent='Nákup bez DPH. Jedna OZP odpovídá 7násobku průměrné mzdy ('+kc(7*w).replace(' Kč',' Kč')+'). Chybí '+fmtN(miss)+' OZP.';
+
+    var vals={Odvod:odvod,Zam:zam,Np:npAmt}, min='Odvod';
+    for(var k in vals){ if(vals[k]<vals[min]) min=k; }
+    ['Odvod','Zam','Np'].forEach(function(k){
+      $('o'+k).classList.toggle('best',k===min);
+      $('t'+k).textContent=k===min?'nejnižší náklad':'';
+    });
+
+    // kombinace
+    var h=num('h'), np=num('np');
+    var empC=t2(emp+h*f);
+    var npCnt=t2(np/(7*w));
+    var rest=Math.max(0,t2(req-empC-npCnt));
+    var cC=coefOf(empC,n);
+    var cO=Math.ceil(rest*cC*w-1e-6);
+    var cH=h*12*g*(1+r);
+    $('kHire').textContent=fmtN(t2(h*f));
+    $('kNp').textContent=fmtN(npCnt);
+    $('kRest').textContent=fmtN(rest);
+    $('kCostH').textContent=kc(cH);
+    $('kCostN').textContent=kc(np);
+    $('kCostO').textContent=kc(cO);
+    $('kTotal').textContent=kc(cH+np+cO);
+    var m3=$('msg3'), txt='';
+    if(rest>0&&h+np>0) txt='<div class="msg">Odvod se počítá s koeficientem '+fmtC(cC)+'. Nově zaměstnané OZP mohou koeficient snížit, proto se odvod nemění lineárně.</div>';
+    if(rest<=0&&req-empC-npCnt< -0.005) txt='<div class="msg">Povinnost máte pokrytou s přesahem.</div>';
+    else if(rest<=0&&(h+np)>0) txt='<div class="msg ok">Povinnost je touto kombinací pokrytá, odvod je nulový.</div>';
+    m3.innerHTML=txt;
+  }
+
+  ['n','year','b','c','w','g','r','hv','h','np'].forEach(function(id){
+    var el=$(id);
+    el.addEventListener('input',function(){ if(id==='w') el.dataset.touched='1'; calc(); });
+    el.addEventListener('change',calc);
+  });
+  calc();
+})();
+</script>
+</body>
+</html>
